@@ -96,7 +96,7 @@ func get_real_client() client.Client[models.Record] {
 		},
 	}
 
-	if myraClient, err := client.NewMyraClient(cfg); err != nil {
+	if myraClient, err := client.NewMyraClient(cfg, logger); err != nil {
 		logger.Error("Could not create myra client", slog.Any("error", err))
 		panic(err)
 	} else {

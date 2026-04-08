@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/configs"
@@ -9,11 +10,12 @@ import (
 )
 
 type MyraClient struct {
-	api MyraAPI
-	cfg configs.Myra
+	api    MyraAPI
+	cfg    configs.Myra
+	logger *slog.Logger
 }
 
-func NewMyraClient(cfg configs.Myra) (*MyraClient, error) {
+func NewMyraClient(cfg configs.Myra, logger *slog.Logger) (*MyraClient, error) {
 	api, err := myrasec.NewWithToken(cfg.Api.Token)
 
 	if err != nil {
@@ -29,8 +31,9 @@ func NewMyraClient(cfg configs.Myra) (*MyraClient, error) {
 	}
 
 	return &MyraClient{
-		api: api,
-		cfg: cfg,
+		api:    api,
+		cfg:    cfg,
+		logger: logger,
 	}, nil
 }
 
@@ -52,11 +55,15 @@ func (c *MyraClient) OnDelete(record myrasec.DNSRecord) (myrasec.DNSRecord, erro
 
 	record.ID = recordId // This can be done since the record won't have an id from cert manager
 
+	c.logger.Info("deleting record", slog.Any("record", record), slog.Any("domainid", domainId))
 	deletedRecord, err := c.api.DeleteDNSRecord(&record, domainId)
 
 	if err != nil {
+		c.logger.Error("Failed to delete record", slog.Any("record", record), slog.Any("domainId", domainId))
 		return myrasec.DNSRecord{}, err
 	}
+	c.logger.Info("deleted record", slog.Any("deleted record", deletedRecord), slog.Any("domainId", domainId))
+
 	return *deletedRecord, err
 }
 
