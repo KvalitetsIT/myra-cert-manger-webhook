@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "example-webhook.fullname" . }}
+  name: {{ include "myra-cert-manager-webhook.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ include "example-webhook.name" . }}
-    chart: {{ include "example-webhook.chart" . }}
+    app: {{ include "myra-cert-manager-webhook.name" . }}
+    chart: {{ include "myra-cert-manager-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "example-webhook.name" . }}
+      app: {{ include "myra-cert-manager-webhook.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "example-webhook.name" . }}
+        app: {{ include "myra-cert-manager-webhook.name" . }}
         release: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ include "example-webhook.fullname" . }}
+      serviceAccountName: {{ include "myra-cert-manager-webhook.fullname" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -31,6 +31,16 @@ spec:
           env:
             - name: GROUP_NAME
               value: {{ .Values.groupName | quote }}
+            - name: MYRA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.myra.apiKeySecretName }}
+                  key: api-key
+            - name: MYRA_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.myra.apiKeySecretName }}
+                  key: api-secret
           ports:
             - name: https
               containerPort: 443
@@ -50,20 +60,20 @@ spec:
               mountPath: /tls
               readOnly: true
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+            {{- toYaml .Values.resources | nindent 12 }}
       volumes:
         - name: certs
           secret:
-            secretName: {{ include "example-webhook.servingCertificate" . }}
-    {{- with .Values.nodeSelector }}
+            secretName: {{ include "myra-cert-manager-webhook.servingCertificate" . }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
       affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

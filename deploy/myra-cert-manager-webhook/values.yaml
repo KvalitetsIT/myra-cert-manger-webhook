@@ -14,8 +14,14 @@ certManager:
   namespace: cert-manager
   serviceAccountName: cert-manager
 
+myra:
+  apiKeySecretName: myra-api-credentials
+
+
+replicaCount: 1
+
 image:
-  repository: kvalitetsit.dk/myra-cert-manager-webhook
+  repository: kvalitetsit/myra-cert-manager-webhook
   tag: latest
   pullPolicy: IfNotPresent
 
