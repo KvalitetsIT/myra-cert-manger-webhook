@@ -29,7 +29,7 @@ spec:
             - --tls-cert-file=/tls/tls.crt
             - --tls-private-key-file=/tls/tls.key
           env:
-            - name: GROUP_NAME
+            - name: HOOK_GROUP_NAME
               value: {{ .Values.groupName | quote }}
             - name: MYRA_API_KEY
               valueFrom:
