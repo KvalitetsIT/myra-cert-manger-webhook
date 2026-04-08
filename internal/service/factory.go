@@ -23,7 +23,7 @@ func NewServiceFactory(cfg configs.Configuration, logger *slog.Logger) *ServiceF
 }
 
 func (s ServiceFactory) CreateDefault() (*service, error) {
-	if myra, err := client.NewMyraClient(s.cfg.Myra); err != nil {
+	if myra, err := client.NewMyraClient(s.cfg.Myra, s.logger); err != nil {
 		return nil, err
 	} else {
 		clientAdapter := adaptors.NewMyraClientAdaptor(myra)
