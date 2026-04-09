@@ -1,7 +1,7 @@
 ![logo](https://kvalitetsit.dk/wp-content/uploads/2024/06/Logo.png)
 
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
-[![Coverage](https://img.shields.io/badge/coverage-57.2%25-brightgreen)](https://codecov.io/gh/holsting/myra-cert-manager-webhook-rs)
+[![Coverage](https://img.shields.io/badge/coverage-56.7%25-brightgreen)](https://codecov.io/gh/holsting/myra-cert-manager-webhook-rs)
 
 # Myra Cert-Manager Webhook
 A webhook component for handling **ACME DNS-01 challenges** via the Myra DNS provider. It integrates with [cert-manager](https://cert-manager.io/) to automate the issuance and renewal of TLS/SSL certificates.
