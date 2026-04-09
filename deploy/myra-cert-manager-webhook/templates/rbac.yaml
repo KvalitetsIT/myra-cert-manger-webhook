@@ -8,7 +8,6 @@ metadata:
     chart: {{ include "myra-cert-manager-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-automountServiceAccountToken: false
 ---
 # Grant the webhook permission to read the ConfigMap containing the Kubernetes
 # apiserver's requestheader-ca-certificate.
