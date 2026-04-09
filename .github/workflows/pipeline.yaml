@@ -83,6 +83,7 @@ jobs:
     needs:
       - test
       - version
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
