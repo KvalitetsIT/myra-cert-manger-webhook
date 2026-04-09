@@ -21,7 +21,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ include "myra-cert-manager-webhook.fullname" . }}
-      automountServiceAccountToken: false
+      automountServiceAccountToken: true
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
