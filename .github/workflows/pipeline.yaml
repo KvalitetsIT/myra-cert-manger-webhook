@@ -27,20 +27,10 @@ jobs:
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ./bin
-          key: envtest-1.31-${{ runner.os }}
-
-      - name: Install envtest Binaries
-        run: |
-          go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
-          setup-envtest use 1.31 --bin-dir ./bin -p path
+          key: envtest-${{ hashFiles('go.mod') }}-${{ runner.os }}
 
       - name: Run Tests with Coverage
-        run: |
-          export TEST_ASSET_ETCD=./bin/k8s/1.31.0-linux-amd64/etcd
-          export TEST_ASSET_KUBE_APISERVER=./bin/k8s/1.31.0-linux-amd64/kube-apiserver
-          export TEST_ASSET_KUBECTL=./bin/k8s/1.31.0-linux-amd64/kubectl
-          export TEST_ZONE_NAME=example.com.
-          make test
+        run: TEST_ZONE_NAME=example.com. make test
 
       - name: Update Coverage Badge in README
         run: |
