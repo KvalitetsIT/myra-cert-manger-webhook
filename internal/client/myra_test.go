@@ -1,12 +1,13 @@
 package client
 
 import (
+	"errors"
 	"log/slog"
 	"testing"
 
 	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/configs"
 	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/testutil/mocks"
-	"github.com/Myra-Security-GmbH/myrasec-go/v2"
+	myrasec "github.com/Myra-Security-GmbH/myrasec-go/v2"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
@@ -18,109 +19,144 @@ func createSampleDomain() myrasec.Domain {
 	}
 }
 
-/*
-	func TestMyraClient_OnAdd(t *testing.T) {
-		mockAPI := new(mocks.MockedAPI)
-		client := &MyraClient{api: mockAPI, cfg: configs.Myra{}}
-
-		record := sampleDNSRecord()
-		domain := createSampleDomain()
-
-		mockAPI.On("ListDomains", mock.Anything).Return([]myrasec.Domain{domain}, nil)
-		mockAPI.On("CreateDNSRecord", mock.AnythingOfType("*myrasec.DNSRecord"), domain.ID).Return(&record, nil)
-
-		result, err := client.OnAdd(record)
-		require.NoError(t, err, "expected no error from OnAdd")
-		require.Equal(t, record.Name, result.Name, "DNS record Name mismatch")
-		require.Equal(t, record.Value, result.Value, "DNS record Value mismatch")
-
-		mockAPI.AssertExpectations(t)
+func sampleDNSRecord() myrasec.DNSRecord {
+	return myrasec.DNSRecord{
+		Name:       "_acme-challenge.example.com.",
+		Value:      "key123",
+		RecordType: "TXT",
 	}
+}
 
-	func TestMyraClient_OnAdd_Error(t *testing.T) {
-		mockAPI := new(mocks.MockedAPI)
-		client := &MyraClient{api: mockAPI, cfg: configs.Myra{}}
+// --- OnAdd ---
 
-		record := sampleDNSRecord()
-		domain := createSampleDomain()
-		clientErr := errors.New("create failed")
+func TestMyraClient_OnAdd(t *testing.T) {
+	mockAPI := new(mocks.MockedAPI)
+	c := &MyraClient{api: mockAPI, cfg: configs.Myra{}, logger: slog.Default()}
 
-		mockAPI.On("ListDomains", mock.Anything).Return([]myrasec.Domain{domain}, nil)
-		mockAPI.On("CreateDNSRecord", mock.AnythingOfType("*myrasec.DNSRecord"), domain.ID).Return(nil, clientErr)
+	record := sampleDNSRecord()
+	domain := createSampleDomain()
 
-		_, err := client.OnAdd(record)
-		require.Error(t, err, "expected an error from OnAdd when client fails")
-		require.Contains(t, err.Error(), "create failed", "error message should contain 'create failed'")
+	mockAPI.On("ListDomains", mock.Anything).Return([]myrasec.Domain{domain}, nil)
+	mockAPI.On("CreateDNSRecord", mock.AnythingOfType("*myrasec.DNSRecord"), domain.ID).Return(&record, nil)
 
-		mockAPI.AssertExpectations(t)
-	}
+	result, err := c.OnAdd(record)
+	require.NoError(t, err)
+	require.Equal(t, record.Name, result.Name)
+	require.Equal(t, record.Value, result.Value)
 
-	func TestMyraClient_OnDelete(t *testing.T) {
-		mockAPI := new(mocks.MockedAPI)
-		client := &MyraClient{api: mockAPI, cfg: configs.Myra{}}
+	mockAPI.AssertExpectations(t)
+}
 
-		record := sampleDNSRecord()
-		domain := createSampleDomain()
+func TestMyraClient_OnAdd_Error(t *testing.T) {
+	mockAPI := new(mocks.MockedAPI)
+	c := &MyraClient{api: mockAPI, cfg: configs.Myra{}, logger: slog.Default()}
 
-		mockAPI.On("ListDomains", mock.Anything).Return([]myrasec.Domain{domain}, nil)
-		mockAPI.On("ListDNSRecords", domain.ID, mock.Anything).Return([]myrasec.DNSRecord{record}, nil)
-		mockAPI.On("DeleteDNSRecord", mock.AnythingOfType("*myrasec.DNSRecord"), domain.ID).Return(&record, nil)
+	record := sampleDNSRecord()
+	domain := createSampleDomain()
+	clientErr := errors.New("create failed")
 
-		result, err := client.OnDelete(record)
-		require.NoError(t, err, "expected no error from OnDelete")
-		require.Equal(t, record.Name, result.Name, "DNS record Name mismatch after deletion")
-		require.Equal(t, record.Value, result.Value, "DNS record Value mismatch after deletion")
+	mockAPI.On("ListDomains", mock.Anything).Return([]myrasec.Domain{domain}, nil)
+	mockAPI.On("CreateDNSRecord", mock.AnythingOfType("*myrasec.DNSRecord"), domain.ID).Return((*myrasec.DNSRecord)(nil), clientErr)
 
-		mockAPI.AssertExpectations(t)
-	}
+	_, err := c.OnAdd(record)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "create failed")
 
-	func TestMyraClient_OnDelete_Error(t *testing.T) {
-		mockAPI := new(mocks.MockedAPI)
-		client := &MyraClient{api: mockAPI, cfg: configs.Myra{}}
+	mockAPI.AssertExpectations(t)
+}
 
-		record := sampleDNSRecord()
-		domain := createSampleDomain()
-		clientErr := errors.New("delete failed")
+func TestMyraClient_OnAdd_DomainNotFound(t *testing.T) {
+	mockAPI := new(mocks.MockedAPI)
+	c := &MyraClient{api: mockAPI, cfg: configs.Myra{}, logger: slog.Default()}
 
-		mockAPI.On("ListDomains", mock.Anything).Return([]myrasec.Domain{domain}, nil)
-		mockAPI.On("ListDNSRecords", domain.ID, record.Name).Return([]myrasec.DNSRecord{record}, nil)
-		mockAPI.On("DeleteDNSRecord", &record, domain.ID).Return(nil, clientErr)
+	record := sampleDNSRecord()
 
-		_, err := client.OnDelete(record)
-		require.Error(t, err, "expected an error from OnDelete when client fails")
-		errorMsg := "Could not aquire domain id associated with the record. A domain id is required in order to delete"
-		require.Contains(t, err.Error(), errorMsg, fmt.Sprintf("error message should contain '%s'", errorMsg))
+	mockAPI.On("ListDomains", mock.Anything).Return([]myrasec.Domain{}, nil)
 
-		mockAPI.AssertExpectations(t)
-	}
+	_, err := c.OnAdd(record)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "A domain id is required")
 
-	func TestMyraClient_get_domain_id(t *testing.T) {
-		mockAPI := new(mocks.MockedAPI)
-		client := &MyraClient{api: mockAPI, cfg: configs.Myra{}}
+	mockAPI.AssertExpectations(t)
+}
 
-		domains := []myrasec.Domain{
-			{ID: 1, Name: "example.com"},
-			{ID: 2, Name: "sub.example.com"},
-		}
+// --- OnDelete ---
 
-		mockAPI.On("ListDomains", mock.Anything).Return(domains, nil)
+func TestMyraClient_OnDelete(t *testing.T) {
+	mockAPI := new(mocks.MockedAPI)
+	c := &MyraClient{api: mockAPI, cfg: configs.Myra{}, logger: slog.Default()}
 
-		domainID, err := client.get_domain_id("test.example.com")
-		require.NoError(t, err, "expected no error when domain exists")
-		require.Equal(t, 1, domainID, "expected domainID 1 for 'test.example.com'")
+	record := sampleDNSRecord()
+	domain := createSampleDomain()
 
-		subID, err := client.get_domain_id("sub.example.com")
-		require.NoError(t, err, "expected no error for exact subdomain match")
-		require.Equal(t, 2, subID, "expected domainID 2 for 'sub.example.com'")
+	mockAPI.On("ListDomains", mock.Anything).Return([]myrasec.Domain{domain}, nil)
+	mockAPI.On("ListDNSRecords", domain.ID, mock.Anything).Return([]myrasec.DNSRecord{record}, nil)
+	mockAPI.On("DeleteDNSRecord", mock.AnythingOfType("*myrasec.DNSRecord"), domain.ID).Return(&record, nil)
 
-		_, err = client.get_domain_id("notfound.com")
-		require.Error(t, err, "expected error for non-existent domain")
-		require.Contains(t, err.Error(), "Could not derive domain id", "error message should mention domain id derivation failure")
-	}
-*/
+	result, err := c.OnDelete(record)
+	require.NoError(t, err)
+	require.Equal(t, record.Name, result.Name)
+	require.Equal(t, record.Value, result.Value)
+
+	mockAPI.AssertExpectations(t)
+}
+
+func TestMyraClient_OnDelete_DomainNotFound(t *testing.T) {
+	mockAPI := new(mocks.MockedAPI)
+	c := &MyraClient{api: mockAPI, cfg: configs.Myra{}, logger: slog.Default()}
+
+	record := sampleDNSRecord()
+
+	mockAPI.On("ListDomains", mock.Anything).Return([]myrasec.Domain{}, nil)
+
+	_, err := c.OnDelete(record)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "Could not aquire domain id")
+
+	mockAPI.AssertExpectations(t)
+}
+
+func TestMyraClient_OnDelete_RecordAlreadyGone(t *testing.T) {
+	mockAPI := new(mocks.MockedAPI)
+	c := &MyraClient{api: mockAPI, cfg: configs.Myra{}, logger: slog.Default()}
+
+	record := sampleDNSRecord()
+	domain := createSampleDomain()
+
+	mockAPI.On("ListDomains", mock.Anything).Return([]myrasec.Domain{domain}, nil)
+	mockAPI.On("ListDNSRecords", domain.ID, mock.Anything).Return([]myrasec.DNSRecord{}, nil)
+
+	result, err := c.OnDelete(record)
+	require.NoError(t, err)
+	require.Equal(t, record.Name, result.Name)
+
+	mockAPI.AssertExpectations(t)
+}
+
+func TestMyraClient_OnDelete_DeleteFails(t *testing.T) {
+	mockAPI := new(mocks.MockedAPI)
+	c := &MyraClient{api: mockAPI, cfg: configs.Myra{}, logger: slog.Default()}
+
+	record := sampleDNSRecord()
+	domain := createSampleDomain()
+	deleteErr := errors.New("delete failed")
+
+	mockAPI.On("ListDomains", mock.Anything).Return([]myrasec.Domain{domain}, nil)
+	mockAPI.On("ListDNSRecords", domain.ID, mock.Anything).Return([]myrasec.DNSRecord{record}, nil)
+	mockAPI.On("DeleteDNSRecord", mock.AnythingOfType("*myrasec.DNSRecord"), domain.ID).Return((*myrasec.DNSRecord)(nil), deleteErr)
+
+	_, err := c.OnDelete(record)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "delete failed")
+
+	mockAPI.AssertExpectations(t)
+}
+
+// --- get_record_id ---
+
 func TestMyraClient_get_record_id(t *testing.T) {
 	mockAPI := new(mocks.MockedAPI)
-	client := &MyraClient{api: mockAPI, cfg: configs.Myra{}, logger: slog.Default()}
+	c := &MyraClient{api: mockAPI, cfg: configs.Myra{}, logger: slog.Default()}
 
 	domainID := 1
 	records := []myrasec.DNSRecord{
@@ -130,19 +166,66 @@ func TestMyraClient_get_record_id(t *testing.T) {
 
 	mockAPI.On("ListDNSRecords", domainID, mock.Anything).Return(records, nil)
 
-	recordID, err := client.get_record_id(domainID, "_acme-challenge.example.com.")
-	require.NoError(t, err, "expected no error when record exists")
-	require.Equal(t, 101, recordID, "expected recordID 101 for '_acme-challenge.example.com.'")
+	recordID, err := c.get_record_id(domainID, "_acme-challenge.example.com.")
+	require.NoError(t, err)
+	require.Equal(t, 101, recordID)
 
-	_, err = client.get_record_id(domainID, "_missing.example.com.")
-	require.Error(t, err, "expected error for non-existent record")
-	require.Contains(t, err.Error(), "Could not derive record id", "error message should mention record id derivation failure")
+	_, err = c.get_record_id(domainID, "_missing.example.com.")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "Could not derive record id")
 }
 
-func sampleDNSRecord() myrasec.DNSRecord {
-	return myrasec.DNSRecord{
-		Name:       "_acme-challenge.example.com.",
-		Value:      "key123",
-		RecordType: "TXT",
+// --- get_domain_id ---
+
+func TestMyraClient_get_domain_id(t *testing.T) {
+	mockAPI := new(mocks.MockedAPI)
+	c := &MyraClient{api: mockAPI, cfg: configs.Myra{}, logger: slog.Default()}
+
+	domains := []myrasec.Domain{
+		{ID: 1, Name: "example.com"},
+		{ID: 2, Name: "other.dk"},
+	}
+
+	mockAPI.On("ListDomains", mock.Anything).Return(domains, nil)
+
+	id, err := c.get_domain_id("_acme-challenge.example.com.")
+	require.NoError(t, err)
+	require.Equal(t, 1, id)
+
+	id, err = c.get_domain_id("_acme-challenge.other.dk.")
+	require.NoError(t, err)
+	require.Equal(t, 2, id)
+
+	_, err = c.get_domain_id("notfound.io.")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "Could not derive domain id")
+
+	mockAPI.AssertExpectations(t)
+}
+
+// --- extractTopDomain ---
+
+func TestExtractTopDomain(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+		wantErr  bool
+	}{
+		{"_acme-challenge.example.com.", "example.com", false},
+		{"www.sub.example.com.", "example.com", false},
+		{"example.com.", "example.com", false},
+		{"_acme-challenge.example.com", "example.com", false},
+		{"single", "", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			result, err := extractTopDomain(tt.input)
+			if tt.wantErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.expected, result)
+			}
+		})
 	}
 }
