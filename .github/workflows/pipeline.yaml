@@ -43,15 +43,15 @@ jobs:
           # This finds 'badge/coverage-XX.X' and replaces the number with the new $COVERAGE
           sed -i -E "s/(badge\/coverage-)[0-9.]+/\1${COVERAGE}/" README.md
 
-      - name: Commit and Push Badge
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add README.md
-          # Avoid error if nothing changed
-          git commit -m "chore: update coverage badge [skip ci]" || exit 0
-          git push
+    #  - name: Commit and Push Badge
+    #    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    #    run: |
+    #      git config --local user.email "action@github.com"
+    #      git config --local user.name "GitHub Action"
+    #      git add README.md
+    #      # Avoid error if nothing changed
+    #      git commit -m "chore: update coverage badge [skip ci]" || exit 0
+    #      git push
 
   version:
     name: Resolve Version
