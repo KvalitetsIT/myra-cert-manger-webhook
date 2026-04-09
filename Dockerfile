@@ -11,6 +11,7 @@ RUN --mount=type=cache,id=gomod-${TARGETOS}-${TARGETARCH},target=/go/pkg/mod \
 
 FROM scratch
 WORKDIR /app
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /app /app/app
 USER 65532:65532
 ENTRYPOINT ["/app/app"]
