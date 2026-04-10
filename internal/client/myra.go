@@ -91,7 +91,7 @@ func (c *MyraClient) get_record_id(domainId int, recordName string) (int, error)
 	// filters the result to only include challenges
 	params := make(map[string]string)
 	params["recordType"] = "TXT"
-	params["search"] = "_acme-challenge"
+	params["search"] = recordName
 
 	records, err := c.api.ListDNSRecords(domainId, params)
 	if err != nil {
