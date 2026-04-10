@@ -87,7 +87,13 @@ func (c *MyraClient) OnAdd(record myrasec.DNSRecord) (myrasec.DNSRecord, error) 
 }
 
 func (c *MyraClient) get_record_id(domainId int, recordName string) (int, error) {
-	records, err := c.api.ListDNSRecords(domainId, nil)
+
+	// filters the result to only include challenges
+	params := make(map[string]string)
+	params["recordType"] = "TXT"
+	params["search"] = "_acme-challenge"
+
+	records, err := c.api.ListDNSRecords(domainId, params)
 	if err != nil {
 		return -1, fmt.Errorf("Was not able to fetch records; %w", err)
 	}
