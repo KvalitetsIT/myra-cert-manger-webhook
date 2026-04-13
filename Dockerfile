@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.26.0-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.26.2-alpine AS builder
 WORKDIR /usr/src/app
 COPY go.mod go.sum ./
 ARG TARGETOS TARGETARCH
