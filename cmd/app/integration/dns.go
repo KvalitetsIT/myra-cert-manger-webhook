@@ -51,7 +51,17 @@ func (e *DnsHandler) addDNSAnswer(q dns.Question, msg *dns.Msg, req *dns.Msg) er
 		var fqdm = q.Name
 
 		domainId, found := e.store.GetDomainID(fqdm)
+		if !found {
+			msg.SetRcode(req, dns.RcodeNameError)
+			return nil
+		}
+
 		recordId, found := e.store.GetRecordID(fqdm)
+		if !found {
+			msg.SetRcode(req, dns.RcodeNameError)
+			return nil
+		}
+
 		record, found := e.store.GetRecord(domainId, recordId)
 		if !found {
 			msg.SetRcode(req, dns.RcodeNameError)
