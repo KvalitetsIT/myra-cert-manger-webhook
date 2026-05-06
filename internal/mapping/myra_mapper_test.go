@@ -3,8 +3,8 @@ package mapping_test
 import (
 	"testing"
 
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/mapping"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/models"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/models"
+	"github.com/KvalitetsIT/cert-manager-webhook-myra/internal/mapping"
 	myrasec "github.com/Myra-Security-GmbH/myrasec-go/v2"
 	"github.com/stretchr/testify/require"
 )

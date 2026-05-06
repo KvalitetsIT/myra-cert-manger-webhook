@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/testutil"
+	"github.com/KvalitetsIT/cert-manager-webhook-myra/internal/testutil"
 	"github.com/Myra-Security-GmbH/myrasec-go/v2"
 	"github.com/Myra-Security-GmbH/myrasec-go/v2/pkg/types"
 	"github.com/miekg/dns"

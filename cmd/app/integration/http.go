@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/testutil"
-	"github.com/Myra-Security-GmbH/myrasec-go/v2"
-	"github.com/gorilla/mux"
 	"io"
 	"log/slog"
 	"net/http"
 	"strconv"
+
+	"github.com/KvalitetsIT/cert-manager-webhook-myra/internal/testutil"
+	"github.com/Myra-Security-GmbH/myrasec-go/v2"
+	"github.com/gorilla/mux"
 )
 
 // The purpose of this handler is to mimic the real Myra API

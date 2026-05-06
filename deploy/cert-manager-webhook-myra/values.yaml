@@ -16,13 +16,12 @@ certManager:
 
 myra:
   apiKeySecretName: myra-api-credentials
-  apiUrl: https://apiv2.myracloud.com
 
 
 replicaCount: 1
 
 image:
-  repository: kvalitetsit/myra-cert-manager-webhook
+  repository: kvalitetsit/cert-manager-webhook-myra
   tag: latest
   pullPolicy: IfNotPresent
 

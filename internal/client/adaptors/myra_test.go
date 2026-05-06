@@ -1,4 +1,4 @@
-package adaptors_test
+package adaptors
 
 /*
 func TestMyraClientAdaptor_OnAdd(t *testing.T) {

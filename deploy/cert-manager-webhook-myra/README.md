@@ -1,4 +1,4 @@
-# myra-cert-manager-webhook
+# cert-manager-webhook-myra
 
 Helm chart for deploying the [Myra](https://www.myrasecurity.com/en/) cert-manager ACME DNS-01 webhook solver.
 
@@ -15,7 +15,7 @@ Helm chart for deploying the [Myra](https://www.myrasecurity.com/en/) cert-manag
 helm repo add kvalitetsit https://raw.githubusercontent.com/KvalitetsIT/helm-repo/master/
 helm repo update
 
-helm install myra-cert-manager-webhook kvalitetsit/myra-cert-manager-webhook \
+helm install cert-manager-webhook-myra kvalitetsit/cert-manager-webhook-myra \
   --namespace cert-manager \
   --set myra.apiKeySecretName=myra-api-credentials
 ```
@@ -57,11 +57,10 @@ spec:
 |-----------|-------------|---------|
 | `groupName` | Unique group name for the webhook API group | `acme-myra.kvalitetsit.dk` |
 | `replicaCount` | Number of replicas | `1` |
-| `image.repository` | Image repository | `kvalitetsit/myra-cert-manager-webhook` |
+| `image.repository` | Image repository | `kvalitetsit/cert-manager-webhook-myra` |
 | `image.tag` | Image tag | `latest` |
 | `image.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `myra.apiKeySecretName` | Name of the secret containing the Myra API credentials | `myra-api-credentials` |
-| `myra.apiUrl` | Myra API base URL | `https://apiv2.myracloud.com` |
 | `certManager.namespace` | Namespace where cert-manager is installed | `cert-manager` |
 | `certManager.serviceAccountName` | Service account name of cert-manager | `cert-manager` |
 | `resources.limits.memory` | Memory limit | `100Mi` |

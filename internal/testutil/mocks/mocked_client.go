@@ -1,17 +1,20 @@
 package mocks
 
-import "github.com/stretchr/testify/mock"
+import (
+	myrasec "github.com/Myra-Security-GmbH/myrasec-go/v2"
+	"github.com/stretchr/testify/mock"
+)
 
-type MockedClient[T any] struct {
+type MockMyraClient struct {
 	mock.Mock
 }
 
-func (m *MockedClient[T]) OnAdd(record T) (T, error) {
-	args := m.Called(record)
-	return args.Get(0).(T), args.Error(1)
+func (m *MockMyraClient) OnAdd(r myrasec.DNSRecord) (myrasec.DNSRecord, error) {
+	args := m.Called(r)
+	return args.Get(0).(myrasec.DNSRecord), args.Error(1)
 }
 
-func (m *MockedClient[T]) OnDelete(record T) (T, error) {
-	args := m.Called(record)
-	return args.Get(0).(T), args.Error(1)
+func (m *MockMyraClient) OnDelete(r myrasec.DNSRecord) (myrasec.DNSRecord, error) {
+	args := m.Called(r)
+	return args.Get(0).(myrasec.DNSRecord), args.Error(1)
 }

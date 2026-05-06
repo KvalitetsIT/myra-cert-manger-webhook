@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "myra-cert-manager-webhook.name" -}}
+{{- define "cert-manager-webhook-myra.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "myra-cert-manager-webhook.fullname" -}}
+{{- define "cert-manager-webhook-myra.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -27,22 +27,22 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "myra-cert-manager-webhook.chart" -}}
+{{- define "cert-manager-webhook-myra.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "myra-cert-manager-webhook.selfSignedIssuer" -}}
-{{ printf "%s-selfsign" (include "myra-cert-manager-webhook.fullname" .) }}
+{{- define "cert-manager-webhook-myra.selfSignedIssuer" -}}
+{{ printf "%s-selfsign" (include "cert-manager-webhook-myra.fullname" .) }}
 {{- end -}}
 
-{{- define "myra-cert-manager-webhook.rootCAIssuer" -}}
-{{ printf "%s-ca" (include "myra-cert-manager-webhook.fullname" .) }}
+{{- define "cert-manager-webhook-myra.rootCAIssuer" -}}
+{{ printf "%s-ca" (include "cert-manager-webhook-myra.fullname" .) }}
 {{- end -}}
 
-{{- define "myra-cert-manager-webhook.rootCACertificate" -}}
-{{ printf "%s-ca" (include "myra-cert-manager-webhook.fullname" .) }}
+{{- define "cert-manager-webhook-myra.rootCACertificate" -}}
+{{ printf "%s-ca" (include "cert-manager-webhook-myra.fullname" .) }}
 {{- end -}}
 
-{{- define "myra-cert-manager-webhook.servingCertificate" -}}
-{{ printf "%s-webhook-tls" (include "myra-cert-manager-webhook.fullname" .) }}
+{{- define "cert-manager-webhook-myra.servingCertificate" -}}
+{{ printf "%s-webhook-tls" (include "cert-manager-webhook-myra.fullname" .) }}
 {{- end -}}

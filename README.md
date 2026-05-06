@@ -1,7 +1,7 @@
 ![logo](https://kvalitetsit.dk/wp-content/uploads/2024/06/Logo.png)
 
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
-[![Coverage](https://img.shields.io/badge/coverage-57.0%25-brightgreen)](https://codecov.io/gh/holsting/myra-cert-manager-webhook-rs)
+[![Coverage](https://img.shields.io/badge/coverage-57.0%25-brightgreen)](https://codecov.io/gh/holsting/cert-manager-webhook-myra-rs)
 
 # Myra Cert-Manager Webhook
 A webhook component for handling **ACME DNS-01 challenges** via the Myra DNS provider. It integrates with [cert-manager](https://cert-manager.io/) to automate the issuance and renewal of TLS/SSL certificates.
@@ -89,9 +89,9 @@ This outputs a binary named app in your current directory (or you can specify a 
 Build a Docker image that packages the webhook and all its dependencies:
 
 ```bash
-docker build -t kvalitetsit/myra-cert-manager-webhook:latest -f ./docker/Dockerfile .
+docker build -t kvalitetsit/cert-manager-webhook-core:latest -f ./docker/Dockerfile .
 ```
-This output a docker image tagged kvalitetsit/myra-cert-manager-webhook:latest. The resulting image can be deployed using [docker-compose](./docker/docker-compose.yaml).
+This output a docker image tagged kvalitetsit/cert-manager-webhook-core:latest. The resulting image can be deployed using [docker-compose](./docker/docker-compose.yaml).
 
 ### Build with Makefile
 The Makefile provides a convenient shortcut to build the Docker image (and optionally manage other tasks like rendering manifests):

@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/Myra-Security-GmbH/myrasec-go/v2"
+	myrasec "github.com/Myra-Security-GmbH/myrasec-go/v2"
 )
 
 type Storage struct {

@@ -1,7 +1,7 @@
 package testutil
 
 import (
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/models"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/models"
 	"github.com/Myra-Security-GmbH/myrasec-go/v2"
 )
 

@@ -4,8 +4,8 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/configs"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/testutil/mocks"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/configs"
+	"github.com/KvalitetsIT/cert-manager-webhook-myra/internal/testutil/mocks"
 	"github.com/Myra-Security-GmbH/myrasec-go/v2"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"

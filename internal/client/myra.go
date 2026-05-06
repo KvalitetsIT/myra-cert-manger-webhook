@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/configs"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/configs"
 	myrasec "github.com/Myra-Security-GmbH/myrasec-go/v2"
 )
 

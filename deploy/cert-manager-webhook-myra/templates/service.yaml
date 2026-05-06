@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "myra-cert-manager-webhook.fullname" . }}
+  name: {{ include "cert-manager-webhook-myra.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ include "myra-cert-manager-webhook.name" . }}
-    chart: {{ include "myra-cert-manager-webhook.chart" . }}
+    app: {{ include "cert-manager-webhook-myra.name" . }}
+    chart: {{ include "cert-manager-webhook-myra.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -16,5 +16,5 @@ spec:
       protocol: TCP
       name: https
   selector:
-    app: {{ include "myra-cert-manager-webhook.name" . }}
+    app: {{ include "cert-manager-webhook-myra.name" . }}
     release: {{ .Release.Name }}

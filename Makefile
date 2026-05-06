@@ -2,7 +2,7 @@ GO ?= $(shell which go)
 OS ?= $(shell $(GO) env GOOS)
 ARCH ?= $(shell $(GO) env GOARCH)
 
-IMAGE_NAME := "kvalitetsit/myra-cert-manager-webhook"
+IMAGE_NAME := "kvalitetsit/cert-manager-webhook-myra"
 IMAGE_TAG := "latest"
 
 OUT := $(shell pwd)/_out
@@ -10,7 +10,7 @@ OUT := $(shell pwd)/_out
 # FIXME: Required to set the environment variables below. Remove when fixed.
 ENVTEST_K8S_VERSION=1.35.0
 
-HELM_FILES := $(shell find deploy/myra-cert-manager-webhook)
+HELM_FILES := $(shell find deploy/cert-manager-webhook-myra)
 
 # FIXME: The environment variables are required by the test helper in cert-manager, but not required to run the tests.
 test: setup-envtest

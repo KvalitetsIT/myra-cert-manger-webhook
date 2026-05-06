@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "myra-cert-manager-webhook.fullname" . }}
+  name: {{ include "cert-manager-webhook-myra.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ include "myra-cert-manager-webhook.name" . }}
-    chart: {{ include "myra-cert-manager-webhook.chart" . }}
+    app: {{ include "cert-manager-webhook-myra.name" . }}
+    chart: {{ include "cert-manager-webhook-myra.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "myra-cert-manager-webhook.name" . }}
+      app: {{ include "cert-manager-webhook-myra.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "myra-cert-manager-webhook.name" . }}
+        app: {{ include "cert-manager-webhook-myra.name" . }}
         release: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ include "myra-cert-manager-webhook.fullname" . }}
+      serviceAccountName: {{ include "cert-manager-webhook-myra.fullname" . }}
       automountServiceAccountToken: true
       {{- with .Values.podSecurityContext }}
       securityContext:
@@ -50,8 +50,6 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.myra.apiKeySecretName }}
                   key: api-secret
-            - name: MYRA_API_URL
-              value: {{ .Values.myra.apiUrl | quote }}
           ports:
             - name: https
               containerPort: 443
@@ -75,7 +73,7 @@ spec:
       volumes:
         - name: certs
           secret:
-            secretName: {{ include "myra-cert-manager-webhook.servingCertificate" . }}
+            secretName: {{ include "cert-manager-webhook-myra.servingCertificate" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

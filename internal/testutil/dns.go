@@ -1,19 +1,18 @@
-package main_test
+package testutil
 
 import (
 	"fmt"
 	"log/slog"
 
-	"github.com/KvalitetsIT/cert-manager-webhook-myra/internal/testutil"
 	"github.com/miekg/dns"
 )
 
 type DnsHandler struct {
-	store  *testutil.Storage // fqdn -> key
+	store  *Storage // fqdn -> key
 	logger *slog.Logger
 }
 
-func NewDnsHandler(store *testutil.Storage, logger *slog.Logger) *DnsHandler {
+func NewDnsHandler(store *Storage, logger *slog.Logger) *DnsHandler {
 	return &DnsHandler{
 		store:  store,
 		logger: logger,

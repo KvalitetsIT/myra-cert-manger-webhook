@@ -6,14 +6,18 @@ import (
 	"os"
 	"testing"
 
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/client"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/client/adaptors"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/configs"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/logging"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/mapping"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/models"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/solvers"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/testutil"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/mapping"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/solvers"
+
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/client"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/configs"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/logging"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/models"
+
+	myraClient "github.com/KvalitetsIT/cert-manager-webhook-myra/internal/client"
+	"github.com/KvalitetsIT/cert-manager-webhook-myra/internal/client/adaptors"
+	"github.com/KvalitetsIT/cert-manager-webhook-myra/internal/testutil"
+
 	"github.com/miekg/dns"
 
 	"github.com/cert-manager/cert-manager/pkg/acme/webhook"
@@ -61,7 +65,7 @@ func runTest(t *testing.T, solver webhook.Solver, dns_port string) {
 	fixture := acmetest.NewFixture(solver,
 		acmetest.SetResolvedZone(zone),
 		acmetest.SetAllowAmbientCredentials(false),
-		acmetest.SetManifestPath("testdata/myra-cert-manager-webhook"),
+		acmetest.SetManifestPath("testdata/cert-manager-webhook-myra"),
 		acmetest.SetDNSServer(fmt.Sprintf("localhost:%s", dns_port)),
 		acmetest.SetUseAuthoritative(false), // <- do not contact system dns
 		// Excluded since the method does not exist
@@ -96,7 +100,7 @@ func get_real_client() client.Client[models.Record] {
 		},
 	}
 
-	if myraClient, err := client.NewMyraClient(cfg, logger); err != nil {
+	if myraClient, err := myraClient.NewMyraClient(cfg, logger); err != nil {
 		logger.Error("Could not create myra client", slog.Any("error", err))
 		panic(err)
 	} else {

@@ -3,8 +3,9 @@ package main_test
 import (
 	"fmt"
 
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/models"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/testutil"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/models"
+
+	"github.com/KvalitetsIT/cert-manager-webhook-myra/internal/testutil"
 	"github.com/Myra-Security-GmbH/myrasec-go/v2"
 )
 

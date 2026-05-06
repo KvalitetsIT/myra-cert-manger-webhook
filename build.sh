@@ -1,1 +1,1 @@
-docker build -t myra-cert-manager-webhook:latest .
+docker build -t cert-manager-webhook-myra:latest .

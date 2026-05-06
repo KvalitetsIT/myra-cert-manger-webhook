@@ -4,7 +4,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/testutil"
+	"github.com/KvalitetsIT/cert-manager-webhook-myra/internal/testutil"
 )
 
 func TestAtomicMap_GetAll_Race(t *testing.T) {

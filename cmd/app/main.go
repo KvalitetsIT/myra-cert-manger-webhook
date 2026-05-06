@@ -3,9 +3,11 @@ package main
 import (
 	"log/slog"
 
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/configs"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/logging"
-	"github.com/KvalitetsIT/myra-cert-manager-webhook/internal/service"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/configs"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/logging"
+	"github.com/KvalitetsIT/cert-manager-webhook-core/pkg/service"
+	"github.com/KvalitetsIT/cert-manager-webhook-myra/internal/client"
+	internal "github.com/KvalitetsIT/cert-manager-webhook-myra/internal/client/adaptors"
 	"github.com/caarlos0/env/v11"
 	"github.com/joho/godotenv"
 )
@@ -22,8 +24,15 @@ func init() {
 }
 
 func main() {
+	myra, err := client.NewMyraClient(CONFIG.Myra, logger)
+	if err != nil {
+		panic(err)
+	}
+
+	adaptor := internal.NewMyraClientAdaptor(myra)
+
 	factory := service.NewServiceFactory(CONFIG, logger)
-	if service, err := factory.CreateDefault(); err != nil {
+	if service, err := factory.CreateDefault(adaptor); err != nil {
 		logger.Error("Failed to create default service", slog.Any("error", err))
 	} else {
 		service.Start()
